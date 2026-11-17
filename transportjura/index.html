@@ -93,7 +93,7 @@
 <div class="wrap">
   <a class="back" href="/">← Tilbage til Spil</a>
   <h1>⚖️ Transportjura Quiz</h1>
-  <p class="sub">Vælg et svar, tryk "Tjek svar", og læs forklaringen. Bygget på CJ's slides, opgaverne og lovteksterne.</p>
+  <p class="sub">Vælg et svar, tryk "Tjek svar", og læs forklaringen. Hvert spørgsmål starter med en situation. Bygget på CJ's slides og lovteksterne.</p>
 
   <!-- START -->
   <section id="start">
@@ -146,20 +146,20 @@
   </section>
 </div>
 
-<script src="questions.js"></script>
-<script src="questions2.js"></script>
-<script src="situations.js"></script>
+<script src="q1.js"></script>
+<script src="q2.js"></script>
+<script src="q3.js"></script>
+<script src="q4.js"></script>
 <script>
 (function () {
   "use strict";
   var TOPICS = [
     ["grund", "Grundbegreber"], ["nsab", "NSAB og aftaler"], ["parter", "Parterne"],
     ["former", "Transportformer"], ["so", "Søloven"], ["cmr", "CMR (lastbil)"],
-    ["luft", "Luft og tog"], ["kob", "Køberet og Incoterms"], ["case", "Opgaverne"]
+    ["luft", "Luft og tog"], ["kob", "Køberet og Incoterms"], ["blandet", "Eksamenstræning"]
   ];
   var TOPIC_NAME = {}; TOPICS.forEach(function (t) { TOPIC_NAME[t[0]] = t[1]; });
-  var SIT = window.SITUATIONS || {};
-  var ALL = (window.QUESTIONS || []).concat(window.QUESTIONS2 || []).map(function (q, i) { q.id = i; if (!q.s && SIT[q.q]) q.s = SIT[q.q]; return q; });
+  var ALL = (window.QBANK || []).map(function (q, i) { q.id = i; return q; });
   var $ = function (id) { return document.getElementById(id); };
 
   // ---- small safe storage
@@ -185,7 +185,7 @@
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
 
   // ---- start screen
-  var selected = load("tj_topics", TOPICS.map(function (t) { return t[0]; }));
+  var selected = load("tj_topics2", TOPICS.map(function (t) { return t[0]; }));
   var count = load("tj_count", 20);
   $("autoRead").checked = !!load("tj_autoread", false);
 
@@ -200,7 +200,7 @@
       b.addEventListener("click", function () {
         var i = selected.indexOf(t[0]);
         if (i > -1) selected.splice(i, 1); else selected.push(t[0]);
-        save("tj_topics", selected); renderTopics(); renderCounts();
+        save("tj_topics2", selected); renderTopics(); renderCounts();
       });
       box.appendChild(b);
     });
@@ -209,7 +209,7 @@
   }
   $("allBtn").addEventListener("click", function () {
     selected = selected.length === TOPICS.length ? [] : TOPICS.map(function (t) { return t[0]; });
-    save("tj_topics", selected); renderTopics(); renderCounts();
+    save("tj_topics2", selected); renderTopics(); renderCounts();
   });
 
   function pool() { return ALL.filter(function (q) { return selected.indexOf(q.k) > -1; }); }
