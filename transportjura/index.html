@@ -58,6 +58,8 @@
   .bar > i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .3s; }
   .tag { display: inline-block; font-size: 14px; color: var(--accent); background: var(--sel);
     border-radius: 99px; padding: 2px 12px; margin-bottom: 10px; font-weight: 700; }
+  .sit { background: var(--sel); border-left: 6px solid var(--accent); border-radius: 12px; padding: 14px 16px; margin: 0 0 14px; }
+  .sit b { display: block; font-size: 15px; color: var(--accent); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
   .q { font-size: 22px; font-weight: 700; margin: 0 0 16px; }
   .opts { display: grid; gap: 10px; }
   .opt { min-width: 0; overflow-wrap: anywhere; display: flex; gap: 12px; align-items: flex-start; text-align: left; font: inherit;
@@ -115,8 +117,9 @@
       <div class="meta"><span id="progress"></span><span id="points"></span></div>
       <div class="bar"><i id="barFill"></i></div>
       <span class="tag" id="tag"></span>
+      <div class="sit" id="sit"><b>Situation</b><span id="sitText"></span></div>
       <p class="q" id="qText"></p>
-      <div class="row" style="margin:-6px 0 12px"><button class="say" id="sayQ" type="button">🔊 Læs spørgsmål højt</button></div>
+      <div class="row" style="margin:-6px 0 12px"><button class="say" id="sayQ" type="button">🔊 Læs situation og spørgsmål højt</button></div>
       <div class="opts" id="opts" role="radiogroup" aria-labelledby="qText"></div>
       <div id="fb" class="fb hidden" aria-live="polite"></div>
       <button class="btn big" id="checkBtn" type="button" disabled>Tjek svar</button>
@@ -144,6 +147,8 @@
 </div>
 
 <script src="questions.js"></script>
+<script src="questions2.js"></script>
+<script src="situations.js"></script>
 <script>
 (function () {
   "use strict";
@@ -153,7 +158,8 @@
     ["luft", "Luft og tog"], ["kob", "Køberet og Incoterms"], ["case", "Opgaverne"]
   ];
   var TOPIC_NAME = {}; TOPICS.forEach(function (t) { TOPIC_NAME[t[0]] = t[1]; });
-  var ALL = (window.QUESTIONS || []).map(function (q, i) { q.id = i; return q; });
+  var SIT = window.SITUATIONS || {};
+  var ALL = (window.QUESTIONS || []).concat(window.QUESTIONS2 || []).map(function (q, i) { q.id = i; if (!q.s && SIT[q.q]) q.s = SIT[q.q]; return q; });
   var $ = function (id) { return document.getElementById(id); };
 
   // ---- small safe storage
@@ -253,6 +259,8 @@
     $("points").textContent = "Rigtige: " + right;
     $("barFill").style.width = (idx / list.length * 100) + "%";
     $("tag").textContent = TOPIC_NAME[q.k] || "";
+    $("sitText").textContent = q.s || "";
+    $("sit").classList.toggle("hidden", !q.s);
     $("qText").textContent = q.q;
     var box = $("opts"); box.innerHTML = "";
     order.forEach(function (oi, pos) {
@@ -272,7 +280,7 @@
 
   function speakQuestion() {
     var q = list[idx];
-    var t = q.q + ". ";
+    var t = (q.s ? "Situation. " + q.s + " Spørgsmål. " : "") + q.q + " ";
     order.forEach(function (oi, pos) { t += "Svar " + "ABCD"[pos] + ": " + q.o[oi] + ". "; });
     speak(t);
   }
