@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Transportjura Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  :root {
+    --bg: #F4F1EA; --surface: #FFFFFF; --text: #1F2328; --muted: #5E6570;
+    --accent: #1F5C99; --accent-strong: #174A7D; --border: #DDD6C8;
+    --ok: #1E7A3C; --ok-bg: #E4F4E8; --bad: #B3261E; --bad-bg: #FBE7E5;
+    --sel: #E3EDF8; --shadow: 0 4px 14px rgba(31,35,40,.08); --on-accent: #FFFFFF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14171B; --surface: #1D2228; --text: #ECEFF3; --muted: #A9B1BC;
+      --accent: #6FA8E8; --accent-strong: #9BC3F0; --border: #323A44;
+      --ok: #6FD08F; --ok-bg: #173323; --bad: #F2948C; --bad-bg: #3A1D1B;
+      --sel: #22344A; --shadow: 0 4px 14px rgba(0,0,0,.4); --on-accent: #0E1A26;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14171B; --surface: #1D2228; --text: #ECEFF3; --muted: #A9B1BC;
+    --accent: #6FA8E8; --accent-strong: #9BC3F0; --border: #323A44;
+    --ok: #6FD08F; --ok-bg: #173323; --bad: #F2948C; --bad-bg: #3A1D1B;
+    --sel: #22344A; --shadow: 0 4px 14px rgba(0,0,0,.4); --on-accent: #0E1A26;
+  }
+  * { box-sizing: border-box; }
+  html, body { overflow-x: hidden; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Atkinson Hyperlegible", Verdana, system-ui, sans-serif;
+    font-size: 19px; line-height: 1.6; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 60px; }
+  a.back { color: var(--muted); text-decoration: none; font-size: 16px; }
+  h1 { font-family: "Big Shoulders Display", sans-serif; font-size: clamp(34px, 7vw, 50px);
+    margin: 8px 0 4px; line-height: 1.05; }
+  .sub { color: var(--muted); margin: 0 0 20px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    padding: 20px; box-shadow: var(--shadow); margin-bottom: 16px; }
+  h2 { font-size: 22px; margin: 0 0 12px; }
+  .topics { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); gap: 10px; }
+  .chip { display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    border: 2px solid var(--border); background: var(--surface); color: var(--text);
+    border-radius: 12px; padding: 12px 14px; font: inherit; font-size: 17px; cursor: pointer; text-align: left; }
+  .chip[aria-pressed="true"] { border-color: var(--accent); background: var(--sel); font-weight: 700; }
+  .chip .n { color: var(--muted); font-size: 15px; font-weight: 400; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  .btn { font: inherit; font-weight: 700; font-size: 19px; border-radius: 12px; padding: 14px 22px;
+    border: 2px solid var(--accent); background: var(--accent); color: var(--on-accent); cursor: pointer; }
+  .btn:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
+  .btn.ghost { background: transparent; color: var(--accent); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .btn.big { width: 100%; margin-top: 16px; }
+  .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 16px; margin-bottom: 8px; gap: 10px; flex-wrap: wrap; }
+  .bar { height: 10px; background: var(--border); border-radius: 99px; overflow: hidden; margin-bottom: 16px; }
+  .bar > i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .3s; }
+  .tag { display: inline-block; font-size: 14px; color: var(--accent); background: var(--sel);
+    border-radius: 99px; padding: 2px 12px; margin-bottom: 10px; font-weight: 700; }
+  .q { font-size: 22px; font-weight: 700; margin: 0 0 16px; }
+  .opts { display: grid; gap: 10px; }
+  .opt { min-width: 0; overflow-wrap: anywhere; display: flex; gap: 12px; align-items: flex-start; text-align: left; font: inherit;
+    border: 2px solid var(--border); background: var(--surface); color: var(--text);
+    border-radius: 12px; padding: 14px; cursor: pointer; }
+  .opt .l { flex: 0 0 34px; height: 34px; border-radius: 50%; border: 2px solid var(--border);
+    display: grid; place-items: center; font-weight: 700; }
+  .opt[aria-checked="true"] { border-color: var(--accent); background: var(--sel); }
+  .opt[aria-checked="true"] .l { border-color: var(--accent); background: var(--accent); color: var(--on-accent); }
+  .opt.right { border-color: var(--ok); background: var(--ok-bg); }
+  .opt.right .l { border-color: var(--ok); background: var(--ok); color: #fff; }
+  .opt.wrong { border-color: var(--bad); background: var(--bad-bg); }
+  .opt.wrong .l { border-color: var(--bad); background: var(--bad); color: #fff; }
+  .opt:disabled { cursor: default; }
+  .fb { margin-top: 16px; border-radius: 12px; padding: 16px; border-left: 6px solid; }
+  .fb.ok { background: var(--ok-bg); border-color: var(--ok); }
+  .fb.bad { background: var(--bad-bg); border-color: var(--bad); }
+  .fb h3 { margin: 0 0 8px; font-size: 22px; }
+  .fb .p { margin-top: 10px; font-size: 16px; color: var(--muted); }
+  .fb .p b { color: var(--text); }
+  .say { font: inherit; font-size: 16px; border: 1px solid var(--border); background: var(--surface);
+    color: var(--text); border-radius: 99px; padding: 6px 14px; cursor: pointer; }
+  .score { font-family: "Big Shoulders Display", sans-serif; font-size: 64px; line-height: 1; margin: 8px 0; }
+  .list { padding-left: 20px; } .list li { margin-bottom: 8px; }
+  .hidden { display: none !important; }
+  label.opt-line { display: flex; gap: 8px; align-items: center; font-size: 17px; margin-top: 10px; }
+  label.opt-line input { width: 20px; height: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← Tilbage til Spil</a>
+  <h1>⚖️ Transportjura Quiz</h1>
+  <p class="sub">Vælg et svar, tryk "Tjek svar", og læs forklaringen. Bygget på CJ's slides, opgaverne og lovteksterne.</p>
+
+  <!-- START -->
+  <section id="start">
+    <div class="card">
+      <h2>1. Vælg emner</h2>
+      <div class="topics" id="topics"></div>
+      <div class="row"><button class="btn ghost" id="allBtn" type="button">Vælg alle</button></div>
+    </div>
+    <div class="card">
+      <h2>2. Hvor mange spørgsmål?</h2>
+      <div class="row" id="counts"></div>
+      <label class="opt-line"><input type="checkbox" id="autoRead"> Læs spørgsmålet højt automatisk</label>
+      <button class="btn big" id="startBtn" type="button">Start quiz</button>
+      <p class="sub" id="best" style="margin-top:12px"></p>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="card">
+      <div class="meta"><span id="progress"></span><span id="points"></span></div>
+      <div class="bar"><i id="barFill"></i></div>
+      <span class="tag" id="tag"></span>
+      <p class="q" id="qText"></p>
+      <div class="row" style="margin:-6px 0 12px"><button class="say" id="sayQ" type="button">🔊 Læs spørgsmål højt</button></div>
+      <div class="opts" id="opts" role="radiogroup" aria-labelledby="qText"></div>
+      <div id="fb" class="fb hidden" aria-live="polite"></div>
+      <button class="btn big" id="checkBtn" type="button" disabled>Tjek svar</button>
+      <button class="btn big hidden" id="nextBtn" type="button">Næste spørgsmål →</button>
+    </div>
+    <div class="row"><button class="btn ghost" id="quitBtn" type="button">Stop og se resultat</button></div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="result" class="hidden">
+    <div class="card">
+      <h2>Resultat</h2>
+      <div class="score" id="scoreBig"></div>
+      <p id="scoreText"></p>
+      <div class="row">
+        <button class="btn" id="retryWrong" type="button">Øv de forkerte igen</button>
+        <button class="btn ghost" id="again" type="button">Ny quiz</button>
+      </div>
+    </div>
+    <div class="card" id="wrongCard">
+      <h2>Spørgsmål du svarede forkert på</h2>
+      <ol class="list" id="wrongList"></ol>
+    </div>
+  </section>
+</div>
+
+<script src="questions.js"></script>
+<script>
+(function () {
+  "use strict";
+  var TOPICS = [
+    ["grund", "Grundbegreber"], ["nsab", "NSAB og aftaler"], ["parter", "Parterne"],
+    ["former", "Transportformer"], ["so", "Søloven"], ["cmr", "CMR (lastbil)"],
+    ["luft", "Luft og tog"], ["kob", "Køberet og Incoterms"], ["case", "Opgaverne"]
+  ];
+  var TOPIC_NAME = {}; TOPICS.forEach(function (t) { TOPIC_NAME[t[0]] = t[1]; });
+  var ALL = (window.QUESTIONS || []).map(function (q, i) { q.id = i; return q; });
+  var $ = function (id) { return document.getElementById(id); };
+
+  // ---- small safe storage
+  function load(key, def) { try { var v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch (e) { return def; } }
+  function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
+
+  // ---- speech (læs højt)
+  var canSpeak = "speechSynthesis" in window;
+  function speak(text) {
+    if (!canSpeak) return;
+    try {
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = "da-DK"; u.rate = 0.95;
+      var v = window.speechSynthesis.getVoices().filter(function (x) { return /^da/i.test(x.lang); })[0];
+      if (v) u.voice = v;
+      window.speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+  function stopSpeak() { if (canSpeak) { try { window.speechSynthesis.cancel(); } catch (e) {} } }
+  if (!canSpeak) { $("sayQ").classList.add("hidden"); $("autoRead").parentNode.classList.add("hidden"); }
+
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+
+  // ---- start screen
+  var selected = load("tj_topics", TOPICS.map(function (t) { return t[0]; }));
+  var count = load("tj_count", 20);
+  $("autoRead").checked = !!load("tj_autoread", false);
+
+  function renderTopics() {
+    var box = $("topics"); box.innerHTML = "";
+    TOPICS.forEach(function (t) {
+      var n = ALL.filter(function (q) { return q.k === t[0]; }).length;
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "chip";
+      b.setAttribute("aria-pressed", selected.indexOf(t[0]) > -1 ? "true" : "false");
+      b.innerHTML = "<span>" + t[1] + "</span><span class='n'>" + n + "</span>";
+      b.addEventListener("click", function () {
+        var i = selected.indexOf(t[0]);
+        if (i > -1) selected.splice(i, 1); else selected.push(t[0]);
+        save("tj_topics", selected); renderTopics(); renderCounts();
+      });
+      box.appendChild(b);
+    });
+    var allOn = selected.length === TOPICS.length;
+    $("allBtn").textContent = allOn ? "Fravælg alle" : "Vælg alle";
+  }
+  $("allBtn").addEventListener("click", function () {
+    selected = selected.length === TOPICS.length ? [] : TOPICS.map(function (t) { return t[0]; });
+    save("tj_topics", selected); renderTopics(); renderCounts();
+  });
+
+  function pool() { return ALL.filter(function (q) { return selected.indexOf(q.k) > -1; }); }
+
+  function renderCounts() {
+    var box = $("counts"); box.innerHTML = "";
+    var max = pool().length;
+    [10, 20, 40, "alle"].forEach(function (c) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "chip";
+      var label = c === "alle" ? "Alle (" + max + ")" : String(c);
+      b.textContent = label;
+      b.setAttribute("aria-pressed", String(count) === String(c) ? "true" : "false");
+      b.addEventListener("click", function () { count = c; save("tj_count", c); renderCounts(); });
+      box.appendChild(b);
+    });
+    $("startBtn").disabled = max === 0;
+    $("startBtn").textContent = max === 0 ? "Vælg mindst ét emne" : "Start quiz";
+    var best = load("tj_best", null);
+    $("best").textContent = best ? "Dit bedste resultat: " + best.pct + " % (" + best.right + " af " + best.total + ")" : "";
+  }
+
+  // ---- quiz state
+  var list = [], idx = 0, right = 0, wrong = [], chosen = null, order = [], checked = false;
+
+  function startQuiz(questions) {
+    list = shuffle(questions);
+    idx = 0; right = 0; wrong = [];
+    show("quiz"); renderQ();
+  }
+  $("startBtn").addEventListener("click", function () {
+    var p = shuffle(pool());
+    if (count !== "alle") p = p.slice(0, Math.min(Number(count), p.length));
+    startQuiz(p);
+  });
+
+  function show(id) {
+    ["start", "quiz", "result"].forEach(function (s) { $(s).classList.toggle("hidden", s !== id); });
+    window.scrollTo(0, 0);
+  }
+
+  function renderQ() {
+    stopSpeak();
+    var q = list[idx]; chosen = null; checked = false;
+    order = shuffle([0, 1, 2, 3]);
+    $("progress").textContent = "Spørgsmål " + (idx + 1) + " af " + list.length;
+    $("points").textContent = "Rigtige: " + right;
+    $("barFill").style.width = (idx / list.length * 100) + "%";
+    $("tag").textContent = TOPIC_NAME[q.k] || "";
+    $("qText").textContent = q.q;
+    var box = $("opts"); box.innerHTML = "";
+    order.forEach(function (oi, pos) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "opt"; b.setAttribute("role", "radio");
+      b.setAttribute("aria-checked", "false"); b.dataset.oi = oi;
+      b.innerHTML = "<span class='l'>" + "ABCD"[pos] + "</span><span></span>";
+      b.lastChild.textContent = q.o[oi];
+      b.addEventListener("click", function () { pick(b); });
+      box.appendChild(b);
+    });
+    $("fb").className = "fb hidden"; $("fb").innerHTML = "";
+    $("checkBtn").disabled = true; $("checkBtn").classList.remove("hidden");
+    $("nextBtn").classList.add("hidden");
+    if ($("autoRead").checked) speakQuestion();
+  }
+
+  function speakQuestion() {
+    var q = list[idx];
+    var t = q.q + ". ";
+    order.forEach(function (oi, pos) { t += "Svar " + "ABCD"[pos] + ": " + q.o[oi] + ". "; });
+    speak(t);
+  }
+  $("sayQ").addEventListener("click", speakQuestion);
+  $("autoRead").addEventListener("change", function () { save("tj_autoread", $("autoRead").checked); });
+
+  function pick(btn) {
+    if (checked) return;
+    Array.prototype.forEach.call($("opts").children, function (b) { b.setAttribute("aria-checked", "false"); });
+    btn.setAttribute("aria-checked", "true");
+    chosen = Number(btn.dataset.oi);
+    $("checkBtn").disabled = false;
+  }
+
+  $("checkBtn").addEventListener("click", function () {
+    if (chosen === null || checked) return;
+    checked = true;
+    var q = list[idx], ok = chosen === 0;
+    if (ok) right++; else wrong.push(q);
+    Array.prototype.forEach.call($("opts").children, function (b) {
+      var oi = Number(b.dataset.oi);
+      b.disabled = true;
+      if (oi === 0) b.classList.add("right");
+      else if (oi === chosen) b.classList.add("wrong");
+    });
+    var fb = $("fb");
+    fb.className = "fb " + (ok ? "ok" : "bad");
+    fb.innerHTML = "";
+    var h = document.createElement("h3"); h.textContent = ok ? "✅ Rigtigt!" : "❌ Forkert";
+    fb.appendChild(h);
+    if (!ok) { var r = document.createElement("p"); r.innerHTML = "<b>Det rigtige svar er:</b> "; r.appendChild(document.createTextNode(q.o[0])); fb.appendChild(r); }
+    var f = document.createElement("p"); f.style.margin = "8px 0 0"; f.textContent = q.f; fb.appendChild(f);
+    var p = document.createElement("div"); p.className = "p"; p.innerHTML = "<b>Paragraf:</b> "; p.appendChild(document.createTextNode(q.p)); fb.appendChild(p);
+    var s = document.createElement("button"); s.type = "button"; s.className = "say"; s.style.marginTop = "12px";
+    s.textContent = "🔊 Læs forklaringen højt";
+    s.addEventListener("click", function () { speak((ok ? "Rigtigt. " : "Forkert. Det rigtige svar er: " + q.o[0] + ". ") + q.f); });
+    if (canSpeak) fb.appendChild(s);
+    $("points").textContent = "Rigtige: " + right;
+    $("checkBtn").classList.add("hidden");
+    $("nextBtn").classList.remove("hidden");
+    $("nextBtn").textContent = idx + 1 < list.length ? "Næste spørgsmål →" : "Se resultat";
+    $("nextBtn").focus();
+  });
+
+  $("nextBtn").addEventListener("click", function () {
+    idx++;
+    if (idx < list.length) renderQ(); else finish();
+  });
+  $("quitBtn").addEventListener("click", function () { finish(); });
+
+  function finish() {
+    stopSpeak();
+    var answered = idx + (checked && idx < list.length ? 1 : 0);
+    if (answered > list.length) answered = list.length;
+    var pct = answered ? Math.round(right / answered * 100) : 0;
+    $("scoreBig").textContent = pct + " %";
+    $("scoreText").textContent = "Du svarede rigtigt på " + right + " af " + answered + " spørgsmål." +
+      (pct >= 80 ? " Flot! Du er godt klædt på." : pct >= 50 ? " Godt på vej. Øv de forkerte igen." : " Øv de forkerte, og læs forklaringerne grundigt.");
+    if (answered >= 10) {
+      var best = load("tj_best", null);
+      if (!best || pct > best.pct) save("tj_best", { pct: pct, right: right, total: answered });
+    }
+    var wl = $("wrongList"); wl.innerHTML = "";
+    wrong.forEach(function (q) {
+      var li = document.createElement("li");
+      li.innerHTML = "<b></b><br><span></span>";
+      li.firstChild.textContent = q.q;
+      li.lastChild.textContent = "Rigtigt svar: " + q.o[0];
+      wl.appendChild(li);
+    });
+    $("wrongCard").classList.toggle("hidden", wrong.length === 0);
+    $("retryWrong").classList.toggle("hidden", wrong.length === 0);
+    show("result");
+  }
+
+  $("retryWrong").addEventListener("click", function () { startQuiz(wrong.slice()); });
+  $("again").addEventListener("click", function () { show("start"); renderTopics(); renderCounts(); });
+
+  renderTopics(); renderCounts();
+})();
+</script>
+</body>
+</html>
